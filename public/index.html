@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cost Dashboard</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .card { background: #f0f0f0; padding: 20px; margin: 10px; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Cloud Cost Dashboard</h1>
+    <div id="stats"></div>
+    <table id="resources">
+        <thead>
+            <tr><th>Name</th><th>Provider</th><th>Cost</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <script>
+        fetch('/api/summary')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('stats').innerHTML = `
+                    <div class="card">
+                        <h3>Resources: ${data.totalResources}</h3>
+                        <h3>Monthly Cost: $${data.totalMonthlyCost}</h3>
+                    </div>
+                `;
+            });
+        
+        fetch('/api/resources')
+            .then(r => r.json())
+            .then(data => {
+                const tbody = document.querySelector('#resources tbody');
+                data.forEach(item => {
+                    const row = `<tr><td>${item.name}</td><td>${item.provider}</td><td>$${item.cost}</td></tr>`;
+                    tbody.innerHTML += row;
+                });
+            });
+    </script>
+</body>
+</html>
